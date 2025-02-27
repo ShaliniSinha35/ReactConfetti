@@ -29,6 +29,18 @@ const BalloonsPop = () => {
   const popBalloon = (id) => {
     setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
   };
+  const balloonsArray = [Balloon1, Balloon2, Balloon3];
+
+const Balloons = () => {
+  return (
+    <div className="balloons-container">
+      {[...Array(5)].map((_, i) => {
+        const randomBalloon = balloonsArray[Math.floor(Math.random() * balloonsArray.length)];
+        return <img key={i} src={randomBalloon} alt="Balloon" className={`balloon balloon-${i + 1}`} />;
+      })}
+    </div>
+  );
+};
 
   return (
     <div className="fixed w-full h-full top-0 left-0 overflow-hidden pointer-events-none">
@@ -42,8 +54,8 @@ const BalloonsPop = () => {
             style={{
               left: `${balloon.left}%`,
               bottom: `${balloon.bottom}%`,
-              width: "80px",
-              height: "100px"
+              width: "150px",
+              height: "150px"
             }}
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ y: "-100vh", scale: 1, opacity: 1 }}

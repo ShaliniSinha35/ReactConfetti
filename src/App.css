@@ -1,13 +1,15 @@
 @import "tailwindcss";
-body {
 
+body {
   text-align: center;
-  font-family: 'Arial', sans-serif;
-  height:100vh;
-overflow: hidden;
-width:100vw;
+  font-family: "Arial", sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+  background: linear-gradient(to right, #fbc2eb, #a6c1ee); /* Light gradient */
 }
 
+/* 🎉 Container */
 .container {
   visibility: hidden;
   position: relative;
@@ -19,143 +21,7 @@ width:100vw;
   flex-direction: column;
 }
 
-.hbd-chatbox span, .wish-hbd span {
-  display: inline-block;
-  font-size: 2rem;
-  color: #ff69b4;
-}
-
-.fake-btn {
-  background-color: #ff69b4;
-  padding: 10px 20px;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.fake-btn:hover {
-  background-color: #ff1493;
-}
-
-.profile-picture {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 20px auto;
-}
-
-.profile-picture img {
-  width: 100%;
-  height: auto;
-}
-
-.baloons img {
-  width: 50px;
-  height: auto;
-  position: absolute;
-  bottom: 0;
-}
-
-.balloons-container {
-  position: absolute;
-  bottom: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-}
-
-.balloon {
-  width: 50px;
-  height: 70px;
-  background: red;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 0;
-  animation: float 5s infinite ease-in-out;
-}
-
-.balloon::after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 50px;
-  background: white;
-  left: 50%;
-  top: 70px;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(100vh) scale(0.9);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) scale(1.1);
-    opacity: 0;
-  }
-}
-
-.balloon-1 {
-  left: 20%;
-  animation-duration: 4s;
-}
-
-.balloon-2 {
-  left: 40%;
-  animation-duration: 5s;
-}
-
-.balloon-3 {
-  left: 60%;
-  animation-duration: 6s;
-}
-
-.balloon-4 {
-  left: 80%;
-  animation-duration: 4.5s;
-}
-
-.balloon-5 {
-  left: 50%;
-  animation-duration: 5.5s;
-}
-
-.balloons-container {
-  position: absolute;
-  bottom: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-}
-
-.balloon {
-  width: 50px;
-  height: 70px;
-  position: absolute;
-  bottom: 0;
-  animation: float 5s infinite ease-in-out;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(100vh) scale(0.9);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) scale(1.1);
-    opacity: 0;
-  }
-}
-
-.balloon-1 { left: 20%; animation-duration: 4s; }
-.balloon-2 { left: 40%; animation-duration: 5s; }
-.balloon-3 { left: 60%; animation-duration: 6s; }
-.balloon-4 { left: 80%; animation-duration: 4.5s; }
-.balloon-5 { left: 50%; animation-duration: 5.5s; }
-
+/* 🎂 Countdown */
 .animated-countdown {
   animation: fadeInScale 1s ease-in-out;
 }
@@ -176,7 +42,111 @@ width:100vw;
 }
 
 .countdown-text {
-  margin-top: 100px; 
+  margin-top: 100px;
 }
 
+/* 🎈 SVG Balloons Fix */
+.balloons-container {
+  position: absolute;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
 
+.balloon {
+  width: 50px;
+  height: 70px;
+  position: absolute;
+  bottom: 0;
+  animation: float 5s infinite ease-in-out;
+  fill: none !important;  /* Fix to ensure SVG keeps its original colors */
+}
+
+/* Reset Image Filters to Fix SVG Colors */
+img {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* 🎈 Balloon Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(100vh) scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* 🎈 Random Balloon Positions */
+.balloon-1 {
+  left: 10%;
+  animation-duration: 4s;
+}
+.balloon-2 {
+  left: 30%;
+  animation-duration: 5s;
+}
+.balloon-3 {
+  left: 50%;
+  animation-duration: 6s;
+}
+.balloon-4 {
+  left: 70%;
+  animation-duration: 4.5s;
+}
+.balloon-5 {
+  left: 90%;
+  animation-duration: 5.5s;
+}
+
+/* 💖 Hearts Floating Animation */
+.heart {
+  position: absolute;
+  font-size: 2rem;
+  color: red;
+  animation: floatUp 3s ease-in-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-150px);
+    opacity: 0;
+  }
+}
+
+/* 🎁 Gift Button */
+.fake-btn {
+  background-color: #ff69b4;
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.fake-btn:hover {
+  background-color: #ff1493;
+}
+
+/* 🎭 Profile Picture */
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 20px auto;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: auto;
+}
