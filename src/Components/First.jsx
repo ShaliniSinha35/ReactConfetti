@@ -1,105 +1,139 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import "../App.css";
 import Lottie from "lottie-react";
 import birthdayAnimation from "../../animation/1.json";
 import cornerAnimation from "../../animation/2.json";
-import open from "../../animation/openGift.json";
-import close from "../../animation/closeGift.json";
+import openGiftAnim from "../../animation/openGift.json";
+import closeGiftAnim from "../../animation/closeGift.json";
 import dance from "../../animation/dance.json";
 import fireworks from "../../animation/cracker.json";
-import c from "../../animation/c.json";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import SlidingMessages from "./SlidingMessages";
 import BalloonsPop from "./BalloonsPop";
-import Balloon1 from "../../img/ballon1.svg";
-import Balloon2 from "../../img/ballon2.svg";
-import Balloon3 from "../../img/ballon3.svg";
+import { Dialog } from "@headlessui/react";
+import img1 from "../../img/g1.jpg"
+import ImageTrain from "./ImageTrain";
 
-const balloonsArray = [Balloon1, Balloon2, Balloon3];
-const messages = [
-  "🎉 Wishing you a day filled with love, joy, and lots of cake! 🍰",
-  "🎂 May your year be filled with happiness and success! 🎈",
-  "🥳 Enjoy your special day to the fullest! 🎁",
+const funnyQuiz = [
+  {
+    question: "What do you get when you mix a birthday cake and a computer?",
+    options: ["A lot of bytes!", "A piece of code", "A virus", "A tasty update"],
+    answer: "A lot of bytes!",
+  },
+  {
+    question: "Why did the birthday cake go to the doctor?",
+    options: ["It had too many candles", "It was feeling crumby!", "It needed a check-up", "It was melting"],
+    answer: "It was feeling crumby!",
+  },
+  {
+    question: "Why did the teddy bear say no to cake?",
+    options: ["It was on a diet", "It didn’t like sweets", "Because it was already stuffed!", "It wanted a salad"],
+    answer: "Because it was already stuffed!",
+  },
 ];
 
-const Balloons = () => {
-  return (
-    <div className="balloons-container">
-      {[...Array(5)].map((_, i) => {
-        const randomBalloon = balloonsArray[Math.floor(Math.random() * balloonsArray.length)];
-        return (
-          <img
-            key={i}
-            src={randomBalloon}
-            alt="Balloon"
-            className={`balloon balloon-${i + 1} fill-none text-inherit`}
-            style={{ filter: "none", mixBlendMode: "normal" }}
-          />
-        );
-      })}
-    </div>
-  );
-};
-const funnyQuiz = [
-  { question: "What do you get when you mix a birthday cake and a computer?", answer: "A lot of bytes!" },
-  { question: "Why did the birthday cake go to the doctor?", answer: "Because it was feeling crumby!" },
-  { question: "What did one candle say to the other?", answer: "Don't birthdays just burn you out?" },
-  { question: "Why did the teddy bear say no to cake?", answer: "Because it was already stuffed!" },
+const imageAudioData = [
+  {
+    src: "../../img/g1.jpg", 
+    message: "This is image 1!",
+    audio: "../../audio/audio1.mp3", 
+  },
+  {
+    src: "../../img/g2.jpg", 
+    message: "This is image 2!",
+    audio: "../../audio/audio1.mp3",
+  },
+  {
+    src: "../../img/g3.jpg", 
+    message: "This is image 3!",
+    audio: "../../audio/audio1.mp3", 
+  },
+  {
+    src: "../../img/g2.jpg", 
+    message: "This is image 3!",
+    audio: "../../audio/audio1.mp3", 
+  },
+  {
+    src: "../../img/g1.jpg", 
+    message: "This is image 3!",
+    audio: "../../audio/audio1.mp3", 
+  },
 ];
 
 const First = () => {
   const [celebrate, setCelebrate] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [giftOpened, setGiftOpened] = useState(false);
-  const [hearts, setHearts] = useState([]);
-  const [cakeClicks, setCakeClicks] = useState(0);
-  const [surpriseUnlocked, setSurpriseUnlocked] = useState(false);
   const [fireworksVisible, setFireworksVisible] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
   const [quizIndex, setQuizIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
- 
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showBlackout, setShowBlackout] = useState(false);
+  const [lightOn, setLightOn] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const audioRefs = useRef(imageAudioData.map(() => React.createRef()));
+  const [hearts, setHearts] = useState([]); 
+
+
+
   useEffect(() => {
     if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      setCelebrate(true);
+      setShowBlackout(true);
     }
   }, [countdown]);
 
-  const openGift = () => setGiftOpened(!giftOpened);
+  useEffect(() => {
+    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
+  const turnOnLight = () => {
+    setLightOn(true);
+    setShowBlackout(false);
+    setCelebrate(true); // Start celebration after turning on light
+  };
+
+  const openGift = () => {
+    setGiftOpened(true);
+    setFireworksVisible(true);
+    setCelebrate(true); // Start Confetti
+    setTimeout(() => {
+      setFireworksVisible(false);
+    }, 5000);
+  };
+
+  const startQuiz = () => {
+    setQuizOpen(true);
+    setQuizIndex(0);
+    setSelectedOption(null);
+  };
+
+  const nextQuestion = () => {
+    setQuizIndex((prev) => (prev + 1) % funnyQuiz.length);
+    setSelectedOption(null);
+  };
+
+  const handleImageClick = (index) => {
+    audioRefs.current[index].current.play();
+  };
   const addHeart = (e) => {
     if (!e.target.closest(".quiz-block")) {
       setHearts([...hearts, { id: Date.now(), x: e.clientX, y: e.clientY }]);
     }
   };
-  const nextQuiz = () => {
-    setShowAnswer(false);
-    setQuizIndex((prev) => (prev + 1) % funnyQuiz.length);
-  };
-  const clickCake = () => {
-    if (!surpriseUnlocked) {
-      setCakeClicks(cakeClicks + 1);
-      if (cakeClicks + 1 === 5) {
-        setSurpriseUnlocked(true);
-        setFireworksVisible(true);
-        setTimeout(() => setFireworksVisible(false), 5000);
-        alert("🎉 Surprise Unlocked! Enjoy the extra celebration!");
-      }
-    }
-  };
+
 
   return (
-    <div
-      className="flex flex-col items-center h-screen bg-gradient-to-r from-white to-gray-100 text-center relative overflow-hidden"
-      onClick={addHeart}
-    >
+    <div onClick={addHeart} className="flex flex-col items-center h-screen bg-gradient-to-r from-white to-gray-100 text-center relative overflow-hidden">
       {countdown > 0 ? (
         <>
           <motion.h1
-            className="text-6xl font-extrabold text-black mb-4 mt-20 countdown-text"
+            className="text-6xl font-extrabold text-black mb-4 mt-20"
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1.2, opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -118,89 +152,128 @@ const First = () => {
         </>
       ) : (
         <>
-          {celebrate && (
-            <Confetti width={window.innerWidth} height={window.innerHeight} />
-          )}
-             {celebrate && <Balloons />}
-
-          {celebrate && <BalloonsPop />}
-          <Lottie
-            animationData={birthdayAnimation}
-         className="w-48 h-48 cursor-pointer"
-            onClick={clickCake}
-          />
-          <SlidingMessages />
-
-          {!giftOpened ? (
-            <Lottie
-              onClick={openGift}
-              animationData={open}
-              className="w-42 h-42 cursor-pointer"
-            />
-          ) : (
-            <Lottie
-              onClick={openGift}
-              animationData={close}
-              className="w-22 h-22 cursor-pointer"
-            />
+          {showBlackout && (
+            <motion.div
+              className="absolute inset-0 bg-black flex items-center justify-center"
+              initial={{ opacity: 1 }}
+              animate={{ opacity: lightOn ? 0 : 1 }}
+              transition={{ duration: 1 }}
+            >
+              {!lightOn && (
+                <button
+                  onClick={turnOnLight}
+                  className="px-6 py-3 bg-yellow-400 text-black text-xl font-bold rounded-lg shadow-lg"
+                >
+                  Turn on the Light 🔆
+                </button>
+              )}
+            </motion.div>
           )}
 
-          {surpriseUnlocked && <h2 className="text-2xl text-white mt-4">🎊 You unlocked a special birthday surprise! 🎊</h2>}
-          {fireworksVisible && <Lottie animationData={fireworks} className="w-96 h-96 mt-6" />}
+          {lightOn && (
+            <>
+              {celebrate && <Confetti width={windowSize.width} height={windowSize.height} />}
+              {celebrate && <BalloonsPop />}
+              <Lottie animationData={birthdayAnimation} className="w-48 h-48 cursor-pointer" />
 
-          <AnimatePresence>
-            {hearts.map((heart) => (
-              <motion.div
-                key={heart.id}
-                className="absolute text-red-500 text-4xl"
-                style={{ left: heart.x, top: heart.y }}
-                initial={{ scale: 0, opacity: 1 }}
-                animate={{ scale: 1.5, opacity: 0 }}
-                transition={{ duration: 1 }}
+              <SlidingMessages />
+            
+
+              {/* {!giftOpened ? (
+                <Lottie onClick={openGift} animationData={openGiftAnim} className="w-52 h-52 cursor-pointer" />
+              ) : (
+                <Lottie animationData={closeGiftAnim} className="w-72 h-72" />
+              )} */}
+
+              {fireworksVisible && <Lottie animationData={fireworks} className="fixed top-0 left-0 w-full h-full" />}
+
+         
+
+              {celebrate && <Lottie animationData={cornerAnimation} className="absolute bottom-5 right-0 h-50 w-50" />}
+              {celebrate && <Lottie animationData={cornerAnimation} className="absolute bottom-2 left-0 h-50 w-50" />}
+
+              {/* Hoverable Images Section */}
+              <div className="flex gap-4 mt-6">
+                {imageAudioData.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={item.src}
+                      alt={`Image ${index + 1}`}
+                      className="w-40 h-40 object-cover rounded-lg cursor-pointer"
+                      onClick={() => handleImageClick(index)}
+                    />
+                    <audio ref={audioRefs.current[index]} src={item.audio} />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black bg-opacity-50 text-white text-xl font-bold rounded-lg">
+                      {item.message}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <ImageTrain></ImageTrain>
+
+              <button
+                onClick={startQuiz}
+                className="mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded-lg hover:bg-purple-700"
               >
-                ❤️
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                🎭 Start Funny Quiz!
+              </button>
 
-             {/* Funny Quiz Section */}
-             <div className="bg-white p-6 rounded-lg shadow-lg mt-6 max-w-lg">
-            <h3 className="text-xl font-bold text-gray-800">🎭 Funny Birthday Quiz!</h3>
-            <p className="text-lg text-gray-700 mt-4">{funnyQuiz[quizIndex].question}</p>
-            {showAnswer && <p className="text-lg font-semibold text-pink-500 mt-2">💡 {funnyQuiz[quizIndex].answer}</p>}
-            <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              onClick={() => setShowAnswer(!showAnswer)}
-            >
-              {showAnswer ? "Hide Answer" : "Show Answer"}
-            </button>
-            <button
-              className="mt-4 ml-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              onClick={nextQuiz}
-            >
-              Next Question
-            </button>
-          </div>
-          
+              <Dialog open={quizOpen} onClose={() => setQuizOpen(false)} className="fixed inset-0 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+                  <h3 className="text-xl font-bold text-gray-800">🎉 Funny Birthday Quiz!</h3>
+                  <p className="text-lg text-gray-700 mt-4">{funnyQuiz[quizIndex].question}</p>
+                  <div className="mt-4 space-y-2">
+                    {funnyQuiz[quizIndex].options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        className={`block w-full py-2 px-4 rounded-lg border ${
+                          selectedOption === option
+                            ? option === funnyQuiz[quizIndex].answer
+                              ? "bg-green-400 text-white"
+                              : "bg-red-400 text-white"
+                            : "bg-gray-200 hover:bg-gray-300"
+                        }`}
+                        onClick={() => setSelectedOption(option)}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg" onClick={nextQuestion}>
+                    Next Question
+                  </button>
+                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg ml-5" onClick={()=>setQuizOpen(false)}>
+                    Close Quiz
+                  </button>
+                </div>
+              </Dialog>
+
+
+           
+       
+            </>
+          )}
+
+                 {/* Heart Animation (Now Correctly Placed) */}
+  {/* <AnimatePresence>
+    {hearts.map((heart) => (
+      <motion.div
+        key={heart.id}
+        className="absolute text-red-500 text-4xl"
+        style={{ left: heart.x, top: heart.y }}
+        initial={{ scale: 0, opacity: 1 }}
+        animate={{ scale: 1.5, opacity: 0 }}
+        transition={{ duration: 1 }}
+      >
+        ❤️
+      </motion.div>
+    ))}
+  </AnimatePresence> */}
         </>
       )}
-  
 
-      
-
-      {celebrate && (
-        <Lottie
-          animationData={cornerAnimation}
-          className="absolute bottom-5 right-0 h-50 w-50"
-        />
-      )}
-
-      {celebrate && (
-        <Lottie
-          animationData={cornerAnimation}
-          className="absolute bottom-2 left-0 h-50 w-50"
-        />
-      )}
+ 
     </div>
   );
 };
